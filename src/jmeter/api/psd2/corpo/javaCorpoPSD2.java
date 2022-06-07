@@ -51,6 +51,7 @@ public class javaCorpoPSD2 extends AbstractJavaSamplerClient {
                 String nik = arg0.getJMeterVariables().get("nik");
                 
                 
+               
                 //
 
 
