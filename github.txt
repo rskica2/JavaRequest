@@ -1,0 +1,1 @@
+copy from C:\Java\NetBeansProjects\jmeter-framework\dist to C:\Java\NetBeansProjects\jmeter-framework\nbproject\lib_ext jmeter-framework.jar
