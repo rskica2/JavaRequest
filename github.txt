@@ -1,1 +1,3 @@
-copy from C:\Java\NetBeansProjects\jmeter-framework\dist to C:\Java\NetBeansProjects\jmeter-framework\nbproject\lib_ext jmeter-framework.jar
+cmd
+C:\Java\NetBeansProjects\jmeter-framework>git commit -a -m "commit"
+C:\Java\NetBeansProjects\jmeter-framework>git push -u origin main
