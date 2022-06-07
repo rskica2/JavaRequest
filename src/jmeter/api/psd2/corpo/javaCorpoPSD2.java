@@ -6,6 +6,10 @@
 package jmeter.api.psd2.corpo;
 
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebResponse;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
@@ -49,19 +53,46 @@ public class javaCorpoPSD2 extends AbstractJavaSamplerClient {
                 // Write your test code here.
 
                 String nik = arg0.getJMeterVariables().get("nik");
+                String authorize_redirect_1 = arg0.getJMeterVariables().get("authorize_redirect_1");
                 
-                
+                System.out.println("nik = " + nik);    
+                System.out.println("authorize_redirect_1 = " + authorize_redirect_1);    
                
+                // set ignore insecure ssl
+                System.setProperty("jsse.enableSNIExtension", "false");
+                
+//                System.setProperty("javax.net.ssl.trustStore", "D:\\Certy_prod\\p26\\p26_keystore.jks");
+//                System.setProperty("javax.net.ssl.trustStorePassword", "export");
+//                System.setProperty("javax.net.ssl.trustStoreType", "JKS");
+
+                final WebClient webClient = new WebClient(BrowserVersion.FIREFOX);
+                try {
+                    
+                    // set ignore insecure ssl
+                    webClient.getOptions().setUseInsecureSSL(true);
+                    webClient.getOptions().setThrowExceptionOnScriptError(false);
+                    final HtmlPage page = webClient.getPage(authorize_redirect_1);
+                    
+                    
+                    System.out.println("page.getTitleText = " + page.getTitleText()); 
+                } catch (Exception e) {
+                    System.out.println("error message = " + e.getMessage());
+                    
+
+                } finally {
+                    webClient.close();
+                }
+                
                 //
 
 
                 result.sampleEnd();
 
-                result.setSampleLabel("nik");
-                result.setSamplerData(nik);                
+                result.setSampleLabel("JavaRequest nr 1 authorize_redirect");
+                //result.setSamplerData(nik);                
                 result.setSuccessful(success);
 
-                System.out.println("nik = " + nik);    
+                
                 return result;
 
         }
