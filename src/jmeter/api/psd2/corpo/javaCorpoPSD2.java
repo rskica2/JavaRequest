@@ -60,6 +60,7 @@ public class javaCorpoPSD2 extends AbstractJavaSamplerClient {
                 result.setSamplerData(nik);                
                 result.setSuccessful(success);
 
+                System.out.println("nik = " + nik);    
                 return result;
 
         }
