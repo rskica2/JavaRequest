@@ -7,14 +7,23 @@ package jmeter.api.psd2.corpo;
 
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.ElementNotFoundException;
+import com.gargoylesoftware.htmlunit.ScriptResult;
+import com.gargoylesoftware.htmlunit.TextPage;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebResponse;
+import com.gargoylesoftware.htmlunit.html.HtmlButton;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+import com.gargoylesoftware.htmlunit.javascript.host.event.Event;
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
 import org.apache.jmeter.protocol.java.sampler.JavaSamplerContext;
 import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.threads.JMeterVariables;
+import org.junit.Assert;
 
 /**
         After comp iling your classes package it to .jar and drop to /lib/ext folder of your JMeter installation. 
@@ -54,7 +63,8 @@ public class javaCorpoPSD2 extends AbstractJavaSamplerClient {
 
                 String nik = arg0.getJMeterVariables().get("nik");
                 String authorize_redirect_1 = arg0.getJMeterVariables().get("authorize_redirect_1");
-                
+
+                System.out.println("chkp 1 : pobrano zmienne z JMeter-a");    
                 System.out.println("nik = " + nik);    
                 System.out.println("authorize_redirect_1 = " + authorize_redirect_1);    
                
@@ -64,21 +74,51 @@ public class javaCorpoPSD2 extends AbstractJavaSamplerClient {
 //                System.setProperty("javax.net.ssl.trustStore", "D:\\Certy_prod\\p26\\p26_keystore.jks");
 //                System.setProperty("javax.net.ssl.trustStorePassword", "export");
 //                System.setProperty("javax.net.ssl.trustStoreType", "JKS");
-
+                System.out.println("chkp 2 : wystartowano symulację przeglądarki Firefox");    
                 final WebClient webClient = new WebClient(BrowserVersion.FIREFOX);
                 try {
                     
                     // set ignore insecure ssl
                     webClient.getOptions().setUseInsecureSSL(true);
                     webClient.getOptions().setThrowExceptionOnScriptError(false);
-                    final HtmlPage page = webClient.getPage(authorize_redirect_1);
+                    webClient.getOptions().setRedirectEnabled(true);
+                    webClient.getOptions().setJavaScriptEnabled(true);
+                    webClient.getCookieManager().setCookiesEnabled(true);
+                    HtmlPage page = webClient.getPage(authorize_redirect_1);
+                    
+                    System.out.println("chkp 3 : załadowano stronę z wykorzystaniem redirect");    
+                    //System.out.println("page.getTitleText = " + page.getTitleText()); 
+                    System.out.println(page.asXml());
+                    
+                    HtmlForm form = page.getFormByName("ActionForm");
+                    HtmlTextInput textField = form.getInputByName("loginId");
+                    textField.setValueAttribute(nik);
+                    //System.out.println(form.asNormalizedText());
+                    HtmlSubmitInput button = (HtmlSubmitInput) form.getFirstByXPath("//input[@value='Logging into the system']");
+                    // 
+
+                    System.out.println("chkp 4 : uzupełniono dane do logowania na stronie");    
+                    System.out.println(form.asNormalizedText());
+
+                    System.out.println("chkp 5 : zainicjowano naciśnięcie klawisza logowania do systemu");    
+
+                    form.fireEvent(Event.TYPE_SUBMIT);
+                    //button.click(); 
+                    Thread.sleep(15000);
+                    
+                    HtmlPage page2 = (HtmlPage) webClient.getCurrentWindow().getEnclosedPage();
+                    System.out.println("chkp 6 : załadowano stronę autoryzacji przelewu");    
+                    System.out.println(page2.asXml());
+                    System.out.println("chkp 7");    
+
+                    String pageAsText = page2.asNormalizedText();
+                    System.out.println("chkp 8");    
+                    Assert.assertTrue(pageAsText.contains("PIS - przelew krajowy"));
                     
                     
-                    System.out.println("page.getTitleText = " + page.getTitleText()); 
                 } catch (Exception e) {
                     System.out.println("error message = " + e.getMessage());
-                    
-
+                    e.printStackTrace();
                 } finally {
                     webClient.close();
                 }
