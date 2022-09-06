@@ -52,7 +52,8 @@ public class javaCorpoPSD2WD extends AbstractJavaSamplerClient {
             boolean success = true;
 
             result.sampleStart();
-
+            WebDriver driver = null; 
+            
             try {    
 
                 // Write your test code here.
@@ -94,7 +95,7 @@ public class javaCorpoPSD2WD extends AbstractJavaSamplerClient {
                
                 // Startujemy przeglądarkę Firefox
                 
-                WebDriver driver = new FirefoxDriver(ffOptions); 
+                driver = new FirefoxDriver(ffOptions); 
                 
                 // Liczba przelogowań 
                 // Dla produkcji dokładnie 1 raz wykonujemy zawartość
@@ -163,13 +164,8 @@ public class javaCorpoPSD2WD extends AbstractJavaSamplerClient {
                 //System.out.println("split 3 = " + tmp2);
                 
                 arg0.getJMeterVariables().put("code", code); 
-                
-                // Zamykamy przeglądarkę Firefox
-                
-                driver.quit();
                  
                 result.sampleEnd();
-                
                 //result.setSampleLabel("JavaRequest to obtain code variable");
                 //result.setSamplerData(nik);                
                 result.setSuccessful(success);
@@ -178,6 +174,13 @@ public class javaCorpoPSD2WD extends AbstractJavaSamplerClient {
                 System.out.println("*** error from JavaRequest***");
                 System.out.println(e.getMessage());
                 e.printStackTrace();
+            } finally {
+                if (driver != null) {
+                    
+                    // Zamykamy przeglądarkę Firefox
+                    
+                    driver.quit();
+                }
             }
 
             return result;
